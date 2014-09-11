@@ -54,6 +54,8 @@ static NSArray * EditableTextInputsInView(UIView *view)
 		return nil;
 	
 	_responders = responders;
+    
+    self.backgroundColor = [UIColor clearColor];
 	
 	self.toolbar = [[UIToolbar alloc] init];
 	self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -212,6 +214,16 @@ static NSArray * EditableTextInputsInView(UIView *view)
 	[firstResponder resignFirstResponder];
 
 	[[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder) to:nil from:nil forEvent:nil];
+}
+
+- (void)setTintColor:(UIColor *)tintColor {
+    _tintColor = tintColor;
+    self.toolbar.tintColor = tintColor;
+}
+
+- (void)setBarTintColor:(UIColor *)barTintColor {
+    _barTintColor = barTintColor;
+    self.toolbar.barTintColor = barTintColor;
 }
 
 @end

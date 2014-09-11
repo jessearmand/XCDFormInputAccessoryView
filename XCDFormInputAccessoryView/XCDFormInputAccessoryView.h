@@ -25,6 +25,9 @@
 
 @property (nonatomic, assign) BOOL hasDoneButton;
 
+@property (nonatomic, strong) UIColor *tintColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *barTintColor UI_APPEARANCE_SELECTOR;
+
 - (void) setHasDoneButton:(BOOL)hasDoneButton animated:(BOOL)animated;
 
 @end
