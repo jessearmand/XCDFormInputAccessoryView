@@ -7,6 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, XCDFormInputAccessoryViewAction) {
+	XCDFormInputAccessoryViewActionNext,
+	XCDFormInputAccessoryViewActionPrevious,
+	XCDFormInputAccessoryViewActionDone
+};
+
+typedef BOOL (^XCDFormInputAccessoryViewActionBlock)(XCDFormInputAccessoryViewAction action);
+
 @interface XCDFormInputAccessoryView : UIView
 
 /** 
@@ -27,6 +35,12 @@
 
 @property (nonatomic, strong) UIColor *tintColor UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIColor *barTintColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, copy) XCDFormInputAccessoryViewActionBlock actionHandler;
+
+- (void) selectAdjacentResponderAtIndex:(NSInteger)index;
+- (void) previous;
+- (void) next;
+- (void) done;
 
 - (void) setHasDoneButton:(BOOL)hasDoneButton animated:(BOOL)animated;
 

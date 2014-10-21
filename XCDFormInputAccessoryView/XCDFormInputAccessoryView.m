@@ -170,7 +170,7 @@ static NSArray * EditableTextInputsInView(UIView *view)
 	
 	NSArray *items;
 	if (hasDoneButton)
-		items = [self.toolbar.items arrayByAddingObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)]];
+		items = [self.toolbar.items arrayByAddingObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)]];
 	else
 		items = [self.toolbar.items subarrayWithRange:NSMakeRange(0, 2)];
 	
@@ -198,21 +198,54 @@ static NSArray * EditableTextInputsInView(UIView *view)
 	[adjacentResponder becomeFirstResponder];
 }
 
-- (void) previous:(UIBarButtonItem *)sender
-{
+- (void) previous:(UIBarButtonItem *)sender {
+	BOOL shouldPrevious = YES;
+	
+	if (self.actionHandler) {
+		shouldPrevious = self.actionHandler(XCDFormInputAccessoryViewActionPrevious);
+	}
+	
+	if (shouldPrevious) {
+		[self previous];
+	}
+}
+
+- (void) next:(UIBarButtonItem *)sender {
+	BOOL shouldNext = YES;
+	
+	if (self.actionHandler) {
+		shouldNext = self.actionHandler(XCDFormInputAccessoryViewActionNext);
+	}
+	
+	if (shouldNext) {
+		[self next];
+	}
+}
+
+- (void) done:(UIBarButtonItem *)sender {
+	BOOL shouldDone = YES;
+	
+	if (self.actionHandler) {
+		shouldDone = self.actionHandler(XCDFormInputAccessoryViewActionDone);
+	}
+	
+	if (shouldDone) {
+		[self done];
+	}
+}
+		 
+- (void) previous {
 	[self selectAdjacentResponderAtIndex:0];
 }
 
-- (void) next:(UIBarButtonItem *)sender
-{
+- (void) next {
 	[self selectAdjacentResponderAtIndex:1];
 }
 
-- (void) done
-{
+- (void) done {
 	UIResponder *firstResponder = [self firstResponder];
 	[firstResponder resignFirstResponder];
-
+	
 	[[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder) to:nil from:nil forEvent:nil];
 }
 
