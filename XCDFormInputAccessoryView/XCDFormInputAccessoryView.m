@@ -54,6 +54,8 @@ static NSArray * EditableTextInputsInView(UIView *view)
 		return nil;
 	
 	_responders = responders;
+    
+    self.backgroundColor = [UIColor clearColor];
 	
 	self.toolbar = [[UIToolbar alloc] init];
 	self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -168,7 +170,7 @@ static NSArray * EditableTextInputsInView(UIView *view)
 	
 	NSArray *items;
 	if (hasDoneButton)
-		items = [self.toolbar.items arrayByAddingObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)]];
+		items = [self.toolbar.items arrayByAddingObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)]];
 	else
 		items = [self.toolbar.items subarrayWithRange:NSMakeRange(0, 2)];
 	
@@ -188,27 +190,73 @@ static NSArray * EditableTextInputsInView(UIView *view)
 		adjacentResponder = [self.responders objectAtIndex:adjacentResponderIndex];
 	
 	// Resign the previous responder before selecting the next one, so the UIKeyboard events could be notified properly.
-	[firstResponder resignFirstResponder];
+    // Only resign if < iOS 7
+	if (!(NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1)) {
+        [firstResponder resignFirstResponder];
+    }
 	
 	[adjacentResponder becomeFirstResponder];
 }
 
-- (void) previous:(UIBarButtonItem *)sender
-{
+- (void) previous:(UIBarButtonItem *)sender {
+	BOOL shouldPrevious = YES;
+	
+	if (self.actionHandler) {
+		shouldPrevious = self.actionHandler(XCDFormInputAccessoryViewActionPrevious);
+	}
+	
+	if (shouldPrevious) {
+		[self previous];
+	}
+}
+
+- (void) next:(UIBarButtonItem *)sender {
+	BOOL shouldNext = YES;
+	
+	if (self.actionHandler) {
+		shouldNext = self.actionHandler(XCDFormInputAccessoryViewActionNext);
+	}
+	
+	if (shouldNext) {
+		[self next];
+	}
+}
+
+- (void) done:(UIBarButtonItem *)sender {
+	BOOL shouldDone = YES;
+	
+	if (self.actionHandler) {
+		shouldDone = self.actionHandler(XCDFormInputAccessoryViewActionDone);
+	}
+	
+	if (shouldDone) {
+		[self done];
+	}
+}
+		 
+- (void) previous {
 	[self selectAdjacentResponderAtIndex:0];
 }
 
-- (void) next:(UIBarButtonItem *)sender
-{
+- (void) next {
 	[self selectAdjacentResponderAtIndex:1];
 }
 
-- (void) done
-{
+- (void) done {
 	UIResponder *firstResponder = [self firstResponder];
 	[firstResponder resignFirstResponder];
-
+	
 	[[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder) to:nil from:nil forEvent:nil];
+}
+
+- (void)setTintColor:(UIColor *)tintColor {
+    _tintColor = tintColor;
+    self.toolbar.tintColor = tintColor;
+}
+
+- (void)setBarTintColor:(UIColor *)barTintColor {
+    _barTintColor = barTintColor;
+    self.toolbar.barTintColor = barTintColor;
 }
 
 @end
